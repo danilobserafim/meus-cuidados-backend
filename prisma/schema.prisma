@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String               @id @default(uuid())
+  name                 String
+  email                String               @unique
+  urlImagem            String
+  glicoses             Glicose[]
+  pressoes             Pressao[]
+  frequenciasCardiacas FrequenciaCardiaca[]
+  temperaturas         Temperatura[]
+  saturacoes           Saturacao[]
+  imcs                 IMC[]
+  colesterols          Colesterol[]
+  triglicerideos       Triglicerideo[]
+  medicamentos         Medicamento[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Glicose {
+  id         String   @id @default(uuid())
+  dataHora   DateTime 
+  valor      String
+  insulina   Boolean
+  alimentada Boolean
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Pressao {
+  id              String   @id @default(uuid())
+  dataHora        DateTime
+  valorSistolica  String
+  valorDiastolica String
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FrequenciaCardiaca {
+  id       String   @id @default(uuid())
+  dataHora DateTime
+  valor    Int // bpm (batimentos por minuto)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Temperatura {
+  id       String   @id @default(uuid())
+  dataHora DateTime
+  valor    Float // °C
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Saturacao {
+  id       String   @id @default(uuid())
+  dataHora DateTime
+  valor    Int // % (percentagem)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IMC {
+  id       String   @id @default(uuid())
+  dataHora DateTime
+  valor    Float // kg/m²
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Colesterol {
+  id       String   @id @default(uuid())
+  dataHora DateTime
+  total    Float // mg/dL
+  hdl      Float // mg/dL
+  ldl      Float // mg/dL
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Triglicerideo {
+  id       String   @id @default(uuid())
+  dataHora DateTime
+  valor    Float // mg/dL
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Medicamento {
+  id                 String                          @id @default(uuid())
+  nome               String
+  dosagem            String // Exemplo: "500mg"
+  horarios           HorarioMedicamento[]
+  historicoAplicacao HistoricoAplicacaoMedicamento[] // Relacionamento com o histórico de aplicações
+  userId             String
+  user               User                            @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HorarioMedicamento {
+  id            String      @id @default(uuid())
+  horario       DateTime // Horário planejado para tomar o medicamento
+  medicamentoId String
+  medicamento   Medicamento @relation(fields: [medicamentoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HistoricoAplicacaoMedicamento {
+  id              String      @id @default(uuid())
+  horarioAplicado DateTime // Horário em que o medicamento foi efetivamente tomado
+  medicamentoId   String
+  medicamento     Medicamento @relation(fields: [medicamentoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
